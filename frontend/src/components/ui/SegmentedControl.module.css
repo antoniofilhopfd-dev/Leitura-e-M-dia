@@ -1,0 +1,26 @@
+.container {
+  display: inline-flex;
+  gap: 2px;
+  background: var(--color-brand-bg);
+  padding: 4px;
+  border-radius: var(--radius-control);
+}
+
+.option {
+  border: none;
+  background: transparent;
+  color: var(--color-muted);
+  padding: 6px 10px;
+  border-radius: 8px;
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.optionActive {
+  background: var(--color-brand-sidebar);
+  color: #ffffff;
+}

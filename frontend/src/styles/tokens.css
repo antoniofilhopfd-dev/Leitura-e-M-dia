@@ -1,0 +1,69 @@
+/* Design tokens — Leitura & Mídia (ver docs/ESPECIFICACAO.md, seção 9) */
+
+:root {
+  --color-brand-blue: #3852b4;
+  --color-brand-blue-light: #5e7ac4;
+  --color-brand-orange: #f08d39;
+  --color-brand-orange-light: #f3be7a;
+  --color-brand-bg: #f5f6fa;
+  --color-brand-bg-alt: #f6f7fb;
+  --color-card: #ffffff;
+  --color-border: #e6e9f1;
+  --color-brand-sidebar: #263a70;
+  --color-brand-sidebar-alt: #30477f;
+  --color-ink: #172033;
+  --color-muted: #747d91;
+  --color-danger: #b23a3a;
+  --color-danger-bg: #f3d9d9;
+
+  --shadow-card: 0 18px 50px rgba(34, 48, 94, 0.08);
+  --radius-card: 20px;
+  --radius-control: 12px;
+
+  --font-display: "Manrope", "Inter", system-ui, sans-serif;
+  --font-body: "Inter", system-ui, sans-serif;
+
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --color-brand-blue: #8098e6;
+    --color-brand-blue-light: #a3b6ec;
+    --color-brand-orange: #f3a35f;
+    --color-brand-orange-light: #f6c090;
+    --color-brand-bg: #10141f;
+    --color-brand-bg-alt: #0b0e17;
+    --color-card: #191f2f;
+    --color-border: #2b3348;
+    --color-brand-sidebar: #0c1120;
+    --color-brand-sidebar-alt: #151d34;
+    --color-ink: #e9ecf5;
+    --color-muted: #9aa3ba;
+    --color-danger: #e28a8a;
+    --color-danger-bg: #3a2222;
+
+    --shadow-card: 0 18px 50px rgba(0, 0, 0, 0.4);
+    color-scheme: dark;
+  }
+}
+
+:root[data-theme="dark"] {
+  --color-brand-blue: #8098e6;
+  --color-brand-blue-light: #a3b6ec;
+  --color-brand-orange: #f3a35f;
+  --color-brand-orange-light: #f6c090;
+  --color-brand-bg: #10141f;
+  --color-brand-bg-alt: #0b0e17;
+  --color-card: #191f2f;
+  --color-border: #2b3348;
+  --color-brand-sidebar: #0c1120;
+  --color-brand-sidebar-alt: #151d34;
+  --color-ink: #e9ecf5;
+  --color-muted: #9aa3ba;
+  --color-danger: #e28a8a;
+  --color-danger-bg: #3a2222;
+
+  --shadow-card: 0 18px 50px rgba(0, 0, 0, 0.4);
+  color-scheme: dark;
+}
