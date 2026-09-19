@@ -1,0 +1,18 @@
+.stars {
+  display: flex;
+  gap: 4px;
+}
+
+.star {
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-size: 22px;
+  line-height: 1;
+  color: var(--color-border);
+  padding: 0;
+}
+
+.starFilled {
+  color: var(--color-brand-orange);
+}

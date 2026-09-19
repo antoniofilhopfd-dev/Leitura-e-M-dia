@@ -3,6 +3,7 @@ import { MediaListPage } from "./MediaListPage";
 export function Livros() {
   return (
     <MediaListPage
+      type="book"
       title="Livros"
       subtitle="Páginas lidas, sessões e destaques."
       addLabel="+ Adicionar livro"

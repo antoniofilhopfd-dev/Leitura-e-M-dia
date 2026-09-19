@@ -21,7 +21,9 @@ export function Sidebar() {
             const activeChild = entry.children.find((child) =>
               location.pathname.startsWith(child.path),
             );
-            const value = activeChild?.key ?? entry.children[0].key;
+            // Sem correspondência (ex.: navegando em "Ler" enquanto este é o
+            // grupo "Assistir") nenhuma aba deste grupo fica marcada como ativa.
+            const value = activeChild?.key ?? "";
             return (
               <div className={styles.group} key={entry.key}>
                 <span className={styles.groupLabel}>{entry.label}</span>

@@ -3,6 +3,7 @@ import { MediaListPage } from "./MediaListPage";
 export function Audiolivros() {
   return (
     <MediaListPage
+      type="audiobook"
       title="Audiolivros"
       subtitle="Tempo ouvido e quanto falta para concluir."
       addLabel="+ Adicionar audiolivro"

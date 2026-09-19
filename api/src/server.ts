@@ -4,6 +4,7 @@ import cookie from "@fastify/cookie";
 import rateLimit from "@fastify/rate-limit";
 import { healthRoutes } from "./routes/health";
 import { authRoutes } from "./routes/auth";
+import { mediaRoutes } from "./routes/media";
 
 export function buildServer() {
   const app = Fastify({ logger: true });
@@ -22,6 +23,7 @@ export function buildServer() {
 
   app.register(healthRoutes);
   app.register(authRoutes);
+  app.register(mediaRoutes);
 
   return app;
 }
