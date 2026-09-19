@@ -2,13 +2,15 @@ import { useEffect, useState } from "react";
 import { PageHeader } from "../components/ui/PageHeader";
 import { Button } from "../components/ui/Button";
 import { SegmentedControl } from "../components/ui/SegmentedControl";
+import { SearchInput } from "../components/ui/SearchInput";
 import { EmptyState } from "../components/ui/EmptyState";
 import { MediaCard } from "../components/media/MediaCard";
 import { MediaFormModal } from "../components/media/MediaFormModal";
 import { SessionQuickAddModal } from "../components/media/SessionQuickAddModal";
 import { HighlightQuickAddModal } from "../components/media/HighlightQuickAddModal";
 import { deleteMedia, listMedia } from "../lib/mediaApi";
-import type { MediaItem, MediaType } from "../lib/mediaTypes";
+import { SORT_OPTIONS, sortMediaItems } from "../lib/mediaTypes";
+import type { MediaItem, MediaType, SortKey } from "../lib/mediaTypes";
 
 const STATUS_FILTERS = [
   { key: "todos", label: "Todos" },
@@ -27,6 +29,8 @@ type MediaListPageProps = {
 
 export function MediaListPage({ type, title, subtitle, addLabel, emptyDescription }: MediaListPageProps) {
   const [status, setStatus] = useState("todos");
+  const [search, setSearch] = useState("");
+  const [sort, setSort] = useState<SortKey>("recentes");
   const [items, setItems] = useState<MediaItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -34,23 +38,23 @@ export function MediaListPage({ type, title, subtitle, addLabel, emptyDescriptio
   const [sessionItem, setSessionItem] = useState<MediaItem | null>(null);
   const [highlightItem, setHighlightItem] = useState<MediaItem | null>(null);
 
-  async function load() {
-    setLoading(true);
-    setError(null);
-    try {
-      const data = await listMedia({ type, status: status === "todos" ? undefined : (status as MediaItem["status"]) });
-      setItems(data);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Não foi possível carregar.");
-    } finally {
-      setLoading(false);
-    }
-  }
-
   useEffect(() => {
-    load();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [type, status]);
+    const timeout = setTimeout(() => {
+      setLoading(true);
+      setError(null);
+      listMedia({
+        type,
+        status: status === "todos" ? undefined : (status as MediaItem["status"]),
+        search: search || undefined,
+      })
+        .then(setItems)
+        .catch((err) => setError(err instanceof Error ? err.message : "Não foi possível carregar."))
+        .finally(() => setLoading(false));
+    }, 250);
+    return () => clearTimeout(timeout);
+  }, [type, status, search]);
+
+  const visibleItems = sortMediaItems(items, sort);
 
   async function handleDelete(id: string) {
     if (!window.confirm("Excluir este item? Essa ação não pode ser desfeita.")) return;
@@ -65,7 +69,19 @@ export function MediaListPage({ type, title, subtitle, addLabel, emptyDescriptio
         subtitle={subtitle}
         actions={<Button variant="primary" onClick={() => setModalItem("new")}>{addLabel}</Button>}
       />
-      <SegmentedControl options={STATUS_FILTERS} value={status} onChange={setStatus} />
+      <SearchInput
+        placeholder="Buscar por título, autor, gênero ou plataforma..."
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+      />
+      <div style={{ display: "flex", flexWrap: "wrap", gap: 12, alignItems: "center", justifyContent: "space-between" }}>
+        <SegmentedControl options={STATUS_FILTERS} value={status} onChange={setStatus} />
+        <SegmentedControl
+          options={SORT_OPTIONS.map((o) => ({ key: o.key, label: o.label }))}
+          value={sort}
+          onChange={(key) => setSort(key as SortKey)}
+        />
+      </div>
 
       {error && (
         <div style={{ color: "var(--color-danger)", background: "var(--color-danger-bg)", borderRadius: 12, padding: "10px 12px", fontSize: 13 }}>
@@ -73,13 +89,13 @@ export function MediaListPage({ type, title, subtitle, addLabel, emptyDescriptio
         </div>
       )}
 
-      {!loading && !error && items.length === 0 && (
+      {!loading && !error && visibleItems.length === 0 && (
         <EmptyState title="Nada por aqui ainda" description={emptyDescription} />
       )}
 
-      {items.length > 0 && (
+      {visibleItems.length > 0 && (
         <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-          {items.map((item) => (
+          {visibleItems.map((item) => (
             <MediaCard
               key={item.id}
               item={item}

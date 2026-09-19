@@ -4,6 +4,7 @@ import { Modal } from "../ui/Modal";
 import { Button } from "../ui/Button";
 import { TextField, SelectField, TextareaField, FieldRow, FieldWrapper } from "../ui/Field";
 import { StarRating } from "../ui/StarRating";
+import { CoverPicker } from "../ui/CoverPicker";
 import { STATUS_LABELS, STATUS_ORDER } from "../../lib/mediaTypes";
 import type { MediaInput, MediaItem, MediaType } from "../../lib/mediaTypes";
 import { createMedia, updateMedia } from "../../lib/mediaApi";
@@ -209,7 +210,7 @@ export function MediaFormModal({ type, initial, onClose, onSaved }: MediaFormMod
           <TextField label="Ano" type="number" value={year} onChange={(e) => setYear(e.target.value)} />
         </FieldRow>
 
-        <TextField label="Capa (URL)" value={coverUrl} onChange={(e) => setCoverUrl(e.target.value)} placeholder="https://..." />
+        <CoverPicker value={coverUrl} onChange={setCoverUrl} />
 
         {(type === "movie" || type === "series" || type === "soap_opera") && (
           <FieldRow>

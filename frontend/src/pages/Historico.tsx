@@ -1,11 +1,14 @@
 import { useEffect, useState } from "react";
 import { PageHeader } from "../components/ui/PageHeader";
 import { Section } from "../components/ui/Section";
+import { SegmentedControl } from "../components/ui/SegmentedControl";
 import { EmptyState } from "../components/ui/EmptyState";
 import { listSessions } from "../lib/sessionApi";
 import type { SessionRecord } from "../lib/sessionApi";
 import { listHighlights } from "../lib/highlightApi";
 import type { HighlightRecord } from "../lib/highlightApi";
+import { PERIOD_OPTIONS, isWithinPeriod } from "../lib/mediaTypes";
+import type { PeriodKey } from "../lib/mediaTypes";
 import styles from "./Historico.module.css";
 
 const UNIT_SUFFIX: Record<string, string> = {
@@ -31,6 +34,7 @@ export function Historico() {
   const [sessions, setSessions] = useState<SessionRecord[]>([]);
   const [highlights, setHighlights] = useState<HighlightRecord[]>([]);
   const [loading, setLoading] = useState(true);
+  const [period, setPeriod] = useState<PeriodKey>("tudo");
 
   useEffect(() => {
     Promise.all([listSessions(), listHighlights()])
@@ -41,20 +45,29 @@ export function Historico() {
       .finally(() => setLoading(false));
   }, []);
 
+  const sessionsInPeriod = sessions.filter((s) => isWithinPeriod(s.date, period));
+  const highlightsInPeriod = highlights.filter((h) => isWithinPeriod(h.createdAt, period));
+
   return (
     <>
       <PageHeader title="Histórico" subtitle="Progresso registrado ao longo do tempo." />
 
+      <SegmentedControl
+        options={PERIOD_OPTIONS.map((o) => ({ key: o.key, label: o.label }))}
+        value={period}
+        onChange={(key) => setPeriod(key as PeriodKey)}
+      />
+
       <Section title="Sessões">
-        {!loading && sessions.length === 0 && (
+        {!loading && sessionsInPeriod.length === 0 && (
           <EmptyState
             title="Nenhuma atividade registrada ainda"
             description="Quando você registrar uma sessão de leitura, escuta ou episódios assistidos, ela aparece aqui."
           />
         )}
-        {sessions.length > 0 && (
+        {sessionsInPeriod.length > 0 && (
           <div className={styles.list}>
-            {sessions.map((session) => (
+            {sessionsInPeriod.map((session) => (
               <div className={styles.row} key={session.id}>
                 <div className={styles.rowMain}>
                   <span className={styles.rowTitle}>{session.media.title}</span>
@@ -68,12 +81,12 @@ export function Historico() {
       </Section>
 
       <Section title="Destaques">
-        {!loading && highlights.length === 0 && (
+        {!loading && highlightsInPeriod.length === 0 && (
           <EmptyState title="Nenhum destaque salvo" description="Destaques de livros aparecem aqui, com página e trecho." />
         )}
-        {highlights.length > 0 && (
+        {highlightsInPeriod.length > 0 && (
           <div className={styles.list}>
-            {highlights.map((highlight) => (
+            {highlightsInPeriod.map((highlight) => (
               <div className={styles.row} key={highlight.id}>
                 <div className={styles.rowMain}>
                   <span className={styles.rowTitle}>

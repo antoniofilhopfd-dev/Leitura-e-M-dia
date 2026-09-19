@@ -134,3 +134,43 @@ export function progressLabel(item: MediaItem): string | null {
   }
   return null;
 }
+
+export type SortKey = "recentes" | "nome" | "avaliacao" | "progresso";
+
+export const SORT_OPTIONS: { key: SortKey; label: string }[] = [
+  { key: "recentes", label: "Recentes" },
+  { key: "nome", label: "Nome" },
+  { key: "avaliacao", label: "Avaliação" },
+  { key: "progresso", label: "Progresso" },
+];
+
+export function sortMediaItems(items: MediaItem[], sortKey: SortKey): MediaItem[] {
+  const sorted = [...items];
+  if (sortKey === "nome") {
+    return sorted.sort((a, b) => a.title.localeCompare(b.title, "pt-BR"));
+  }
+  if (sortKey === "avaliacao") {
+    return sorted.sort((a, b) => (b.rating ?? -1) - (a.rating ?? -1));
+  }
+  if (sortKey === "progresso") {
+    return sorted.sort((a, b) => progressPercent(b.progress) - progressPercent(a.progress));
+  }
+  return sorted.sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
+}
+
+export type PeriodKey = "7d" | "30d" | "ano" | "tudo";
+
+export const PERIOD_OPTIONS: { key: PeriodKey; label: string }[] = [
+  { key: "7d", label: "7 dias" },
+  { key: "30d", label: "30 dias" },
+  { key: "ano", label: "Ano" },
+  { key: "tudo", label: "Tudo" },
+];
+
+export function isWithinPeriod(dateString: string, period: PeriodKey): boolean {
+  if (period === "tudo") return true;
+  const date = new Date(dateString).getTime();
+  const now = Date.now();
+  const days = period === "7d" ? 7 : period === "30d" ? 30 : 365;
+  return now - date <= days * 24 * 60 * 60 * 1000;
+}
