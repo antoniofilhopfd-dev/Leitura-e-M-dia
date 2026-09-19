@@ -1,5 +1,7 @@
 import { Navigate, Route, Routes } from "react-router-dom";
+import { useAuth } from "./auth/AuthContext";
 import { AppShell } from "./components/layout/AppShell";
+import { Login } from "./pages/Login";
 import { Hoje } from "./pages/Hoje";
 import { Filmes } from "./pages/Filmes";
 import { Series } from "./pages/Series";
@@ -13,6 +15,16 @@ import { Configuracoes } from "./pages/Configuracoes";
 import { Mais } from "./pages/Mais";
 
 function App() {
+  const { status } = useAuth();
+
+  if (status === "loading") {
+    return null;
+  }
+
+  if (status === "unauthenticated") {
+    return <Login />;
+  }
+
   return (
     <AppShell>
       <Routes>

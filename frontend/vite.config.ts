@@ -4,4 +4,15 @@ import { defineConfig } from 'vite'
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
+  server: {
+    proxy: {
+      // Em produção o Nginx faz esse mesmo proxy sob o mesmo domínio
+      // (ver docs/ESPECIFICACAO.md, Etapa 12) — aqui replicamos em dev
+      // para que o cookie de sessão funcione como same-origin.
+      '/api': {
+        target: 'http://localhost:3333',
+        changeOrigin: true,
+      },
+    },
+  },
 })

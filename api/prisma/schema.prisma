@@ -54,6 +54,7 @@ model User {
   mediaItems MediaItem[]
   settings   Settings?
   uploads    Upload[]
+  sessions   Session[]
 
   @@map("users")
 }
@@ -157,6 +158,20 @@ model Settings {
   theme  String @default("auto")
 
   @@map("settings")
+}
+
+// Sessão de autenticação (seção 26). O cookie guarda apenas o id (token
+// aleatório e opaco) — a validade é sempre conferida contra esta tabela,
+// nunca decodificada no cliente, e nunca em localStorage.
+model Session {
+  id        String   @id
+  userId    String   @map("user_id")
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime @map("expires_at")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@index([userId])
+  @@map("sessions")
 }
 
 model Upload {
