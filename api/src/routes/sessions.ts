@@ -42,6 +42,10 @@ export async function sessionRoutes(app: FastifyInstance) {
     const startValue = media.progress?.currentValue ?? 0;
     const rawEndValue = startValue + quantity;
     const endValue = media.progress?.totalValue ? Math.min(rawEndValue, media.progress.totalValue) : rawEndValue;
+    // A quantidade registrada é sempre o avanço real (endValue - startValue),
+    // nunca o valor bruto enviado — evita contar além do total quando o
+    // usuário informa mais do que falta (ex.: "30 páginas" faltando só 10).
+    const appliedQuantity = endValue - startValue;
 
     const session = await prisma.activitySession.create({
       data: {
@@ -49,7 +53,7 @@ export async function sessionRoutes(app: FastifyInstance) {
         date: date ? new Date(date) : new Date(),
         startValue,
         endValue,
-        quantity,
+        quantity: appliedQuantity,
       },
       include: { media: { select: mediaSelect } },
     });

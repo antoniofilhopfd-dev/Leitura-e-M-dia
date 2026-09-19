@@ -1,3 +1,4 @@
+import { mkdirSync } from "node:fs";
 import Fastify from "fastify";
 import cors from "@fastify/cors";
 import cookie from "@fastify/cookie";
@@ -16,6 +17,9 @@ import { MAX_UPLOAD_BYTES, UPLOADS_DIR } from "./lib/config";
 
 export function buildServer() {
   const app = Fastify({ logger: true });
+
+  // @fastify/static exige que a pasta exista no momento do registro.
+  mkdirSync(UPLOADS_DIR, { recursive: true });
 
   app.register(helmet);
 

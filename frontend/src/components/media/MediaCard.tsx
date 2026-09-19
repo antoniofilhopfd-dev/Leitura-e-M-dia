@@ -40,8 +40,8 @@ export function MediaCard({ item, onEdit, onDelete, onLogSession, onAddHighlight
         {subtitleParts && <span className={styles.subtitle}>{subtitleParts}</span>}
         {Boolean(item.rating) && (
           <span className={styles.rating} aria-label={`Avaliação: ${item.rating} de 5`}>
-            {"★".repeat(item.rating!)}
-            {"☆".repeat(5 - item.rating!)}
+            {"★".repeat(Math.min(5, Math.max(0, item.rating!)))}
+            {"☆".repeat(Math.min(5, Math.max(0, 5 - item.rating!)))}
           </span>
         )}
         {label && (

@@ -37,6 +37,12 @@ const includeRelations = {
   progress: true,
 };
 
+// Avaliação vai de 0 (sem nota) a 5 estrelas (seção 6) — validado aqui
+// porque a UI usa o valor diretamente em `"★".repeat(rating)`.
+function isValidRating(rating: number | null | undefined) {
+  return rating == null || (Number.isInteger(rating) && rating >= 0 && rating <= 5);
+}
+
 export async function mediaRoutes(app: FastifyInstance) {
   app.addHook("preHandler", requireAuth);
 
@@ -86,6 +92,9 @@ export async function mediaRoutes(app: FastifyInstance) {
     if (!body?.type || !body?.title?.trim()) {
       return reply.status(400).send({ error: "type e title são obrigatórios" });
     }
+    if (!isValidRating(body.rating)) {
+      return reply.status(400).send({ error: "rating deve ser um número inteiro de 0 a 5" });
+    }
 
     const item = await prisma.mediaItem.create({
       data: {
@@ -123,6 +132,9 @@ export async function mediaRoutes(app: FastifyInstance) {
       if (!existing) return reply.status(404).send({ error: "Não encontrado" });
 
       const body = request.body;
+      if (!isValidRating(body.rating)) {
+        return reply.status(400).send({ error: "rating deve ser um número inteiro de 0 a 5" });
+      }
 
       const item = await prisma.mediaItem.update({
         where: { id: existing.id },
