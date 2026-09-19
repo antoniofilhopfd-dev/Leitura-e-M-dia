@@ -1,0 +1,172 @@
+// Schema inicial — ver docs/ESPECIFICACAO.md, seções 11 e 13.
+// Nesta etapa (Backend base) o schema só precisa existir e migrar com
+// sucesso contra o PostgreSQL; os endpoints de CRUD chegam na Etapa 4.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum MediaType {
+  movie
+  series
+  soap_opera
+  book
+  audiobook
+
+  @@map("media_type")
+}
+
+// Vocabulário padronizado no banco (seção 6) — a UI traduz para o texto
+// adequado a cada mídia ("Quero assistir" / "Quero ler" / "Quero ouvir" etc.)
+enum MediaStatus {
+  want
+  in_progress
+  completed
+  paused
+  abandoned
+
+  @@map("media_status")
+}
+
+// Ajuste aprovado (seção 13.1): enum em vez de string livre.
+enum ProgressUnit {
+  page
+  episode
+  chapter
+  second
+  part
+
+  @@map("progress_unit")
+}
+
+model User {
+  id           String   @id @default(cuid())
+  name         String
+  email        String   @unique
+  passwordHash String   @map("password_hash")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  mediaItems MediaItem[]
+  settings   Settings?
+  uploads    Upload[]
+
+  @@map("users")
+}
+
+model MediaItem {
+  id        String      @id @default(cuid())
+  userId    String      @map("user_id")
+  type      MediaType
+  title     String
+  status    MediaStatus @default(want)
+  coverUrl  String?     @map("cover_url")
+  genre     String?
+  rating    Int?
+  notes     String?
+  createdAt DateTime    @default(now()) @map("created_at")
+  updatedAt DateTime    @updatedAt @map("updated_at")
+
+  user       User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  metadata   MediaMetadata?
+  progress   Progress?
+  sessions   ActivitySession[]
+  highlights Highlight[]
+
+  @@index([userId])
+  @@map("media_items")
+}
+
+// Dados específicos por tipo de mídia (seção 6). Campos não aplicáveis a um
+// tipo ficam nulos — ex.: um livro não usa season_current.
+model MediaMetadata {
+  id      String    @id @default(cuid())
+  mediaId String    @unique @map("media_id")
+  media   MediaItem @relation(fields: [mediaId], references: [id], onDelete: Cascade)
+
+  author   String?
+  year     Int?
+  platform String?
+
+  // Séries (ajuste 13.2: totais ficam aqui, não em Progress)
+  seasonCurrent       Int? @map("season_current")
+  seasonTotalEpisodes Int? @map("season_total_episodes")
+  seriesTotalEpisodes Int? @map("series_total_episodes")
+
+  // Novelas
+  chapterTotal Int? @map("chapter_total")
+
+  // Filmes / Audiolivros
+  durationSeconds Int? @map("duration_seconds")
+
+  @@map("media_metadata")
+}
+
+// Progresso corrente do conteúdo (seção 11). "unit" descreve o que
+// current_value/total_value contam para este item.
+model Progress {
+  id           String       @id @default(cuid())
+  mediaId      String       @unique @map("media_id")
+  media        MediaItem    @relation(fields: [mediaId], references: [id], onDelete: Cascade)
+  currentValue Int          @default(0) @map("current_value")
+  totalValue   Int?         @map("total_value")
+  unit         ProgressUnit
+  updatedAt    DateTime     @updatedAt @map("updated_at")
+
+  @@map("progress")
+}
+
+// Sessões de consumo (leitura, escuta, episódios assistidos) — seções 6 e 7.
+model ActivitySession {
+  id              String    @id @default(cuid())
+  mediaId         String    @map("media_id")
+  media           MediaItem @relation(fields: [mediaId], references: [id], onDelete: Cascade)
+  date            DateTime
+  startValue      Int?      @map("start_value")
+  endValue        Int?      @map("end_value")
+  quantity        Int?
+  durationSeconds Int?      @map("duration_seconds")
+  createdAt       DateTime  @default(now()) @map("created_at")
+
+  @@index([mediaId])
+  @@map("activity_sessions")
+}
+
+// Destaques de livros (seção 6). Ajuste 13.4: media_id genérico, para
+// permitir destaques de audiolivro no futuro sem migrar o schema.
+model Highlight {
+  id        String    @id @default(cuid())
+  mediaId   String    @map("media_id")
+  media     MediaItem @relation(fields: [mediaId], references: [id], onDelete: Cascade)
+  page      Int?
+  text      String
+  createdAt DateTime  @default(now()) @map("created_at")
+
+  @@index([mediaId])
+  @@map("highlights")
+}
+
+model Settings {
+  id     String @id @default(cuid())
+  userId String @unique @map("user_id")
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  theme  String @default("auto")
+
+  @@map("settings")
+}
+
+model Upload {
+  id        String   @id @default(cuid())
+  userId    String   @map("user_id")
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  url       String
+  kind      String?
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@index([userId])
+  @@map("uploads")
+}
