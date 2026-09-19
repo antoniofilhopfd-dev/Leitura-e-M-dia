@@ -1,0 +1,45 @@
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  background: var(--color-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-control);
+  padding: 12px 14px;
+}
+
+.rowMain {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.rowTitle {
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.rowMeta {
+  font-size: 12px;
+  color: var(--color-muted);
+}
+
+.rowValue {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--color-brand-blue);
+  white-space: nowrap;
+}
+
+.highlightText {
+  font-size: 13px;
+  color: var(--color-ink);
+  font-style: italic;
+}

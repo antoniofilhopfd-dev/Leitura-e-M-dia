@@ -5,6 +5,8 @@ import { SegmentedControl } from "../components/ui/SegmentedControl";
 import { EmptyState } from "../components/ui/EmptyState";
 import { MediaCard } from "../components/media/MediaCard";
 import { MediaFormModal } from "../components/media/MediaFormModal";
+import { SessionQuickAddModal } from "../components/media/SessionQuickAddModal";
+import { HighlightQuickAddModal } from "../components/media/HighlightQuickAddModal";
 import { deleteMedia, listMedia } from "../lib/mediaApi";
 import type { MediaItem, MediaType } from "../lib/mediaTypes";
 
@@ -24,6 +26,8 @@ export function Biblioteca() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [editing, setEditing] = useState<MediaItem | null>(null);
+  const [sessionItem, setSessionItem] = useState<MediaItem | null>(null);
+  const [highlightItem, setHighlightItem] = useState<MediaItem | null>(null);
 
   useEffect(() => {
     const timeout = setTimeout(() => {
@@ -68,7 +72,14 @@ export function Biblioteca() {
       {items.length > 0 && (
         <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
           {items.map((item) => (
-            <MediaCard key={item.id} item={item} onEdit={() => setEditing(item)} onDelete={() => handleDelete(item.id)} />
+            <MediaCard
+              key={item.id}
+              item={item}
+              onEdit={() => setEditing(item)}
+              onDelete={() => handleDelete(item.id)}
+              onLogSession={() => setSessionItem(item)}
+              onAddHighlight={() => setHighlightItem(item)}
+            />
           ))}
         </div>
       )}
@@ -83,6 +94,21 @@ export function Biblioteca() {
             setEditing(null);
           }}
         />
+      )}
+
+      {sessionItem && (
+        <SessionQuickAddModal
+          item={sessionItem}
+          onClose={() => setSessionItem(null)}
+          onSaved={(updated) => {
+            setItems((prev) => prev.map((item) => (item.id === updated.id ? updated : item)));
+            setSessionItem(null);
+          }}
+        />
+      )}
+
+      {highlightItem && (
+        <HighlightQuickAddModal item={highlightItem} onClose={() => setHighlightItem(null)} onSaved={() => setHighlightItem(null)} />
       )}
     </>
   );

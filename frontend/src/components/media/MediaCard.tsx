@@ -7,9 +7,11 @@ type MediaCardProps = {
   item: MediaItem;
   onEdit: () => void;
   onDelete: () => void;
+  onLogSession?: () => void;
+  onAddHighlight?: () => void;
 };
 
-export function MediaCard({ item, onEdit, onDelete }: MediaCardProps) {
+export function MediaCard({ item, onEdit, onDelete, onLogSession, onAddHighlight }: MediaCardProps) {
   const percent = progressPercent(item.progress);
   const label = progressLabel(item);
   const subtitleParts = [item.metadata?.author, item.metadata?.platform, item.metadata?.year]
@@ -43,10 +45,30 @@ export function MediaCard({ item, onEdit, onDelete }: MediaCardProps) {
           </>
         )}
         <div className={styles.actions}>
-          <button type="button" className={styles.actionButton} onClick={onEdit}>
+          {onLogSession && item.progress && (
+            <button
+              type="button"
+              className={styles.actionButton}
+              onClick={onLogSession}
+              aria-label={`Registrar sessão de ${item.title}`}
+            >
+              Registrar sessão
+            </button>
+          )}
+          {onAddHighlight && item.type === "book" && (
+            <button
+              type="button"
+              className={styles.actionButton}
+              onClick={onAddHighlight}
+              aria-label={`Adicionar destaque de ${item.title}`}
+            >
+              Destaque
+            </button>
+          )}
+          <button type="button" className={styles.actionButton} onClick={onEdit} aria-label={`Editar ${item.title}`}>
             Editar
           </button>
-          <button type="button" className={styles.actionButton} onClick={onDelete}>
+          <button type="button" className={styles.actionButton} onClick={onDelete} aria-label={`Excluir ${item.title}`}>
             Excluir
           </button>
         </div>

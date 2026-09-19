@@ -5,6 +5,8 @@ import { SegmentedControl } from "../components/ui/SegmentedControl";
 import { EmptyState } from "../components/ui/EmptyState";
 import { MediaCard } from "../components/media/MediaCard";
 import { MediaFormModal } from "../components/media/MediaFormModal";
+import { SessionQuickAddModal } from "../components/media/SessionQuickAddModal";
+import { HighlightQuickAddModal } from "../components/media/HighlightQuickAddModal";
 import { deleteMedia, listMedia } from "../lib/mediaApi";
 import type { MediaItem, MediaType } from "../lib/mediaTypes";
 
@@ -29,6 +31,8 @@ export function MediaListPage({ type, title, subtitle, addLabel, emptyDescriptio
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [modalItem, setModalItem] = useState<MediaItem | "new" | null>(null);
+  const [sessionItem, setSessionItem] = useState<MediaItem | null>(null);
+  const [highlightItem, setHighlightItem] = useState<MediaItem | null>(null);
 
   async function load() {
     setLoading(true);
@@ -81,6 +85,8 @@ export function MediaListPage({ type, title, subtitle, addLabel, emptyDescriptio
               item={item}
               onEdit={() => setModalItem(item)}
               onDelete={() => handleDelete(item.id)}
+              onLogSession={() => setSessionItem(item)}
+              onAddHighlight={() => setHighlightItem(item)}
             />
           ))}
         </div>
@@ -99,6 +105,21 @@ export function MediaListPage({ type, title, subtitle, addLabel, emptyDescriptio
             setModalItem(null);
           }}
         />
+      )}
+
+      {sessionItem && (
+        <SessionQuickAddModal
+          item={sessionItem}
+          onClose={() => setSessionItem(null)}
+          onSaved={(updated) => {
+            setItems((prev) => prev.map((item) => (item.id === updated.id ? updated : item)));
+            setSessionItem(null);
+          }}
+        />
+      )}
+
+      {highlightItem && (
+        <HighlightQuickAddModal item={highlightItem} onClose={() => setHighlightItem(null)} onSaved={() => setHighlightItem(null)} />
       )}
     </>
   );

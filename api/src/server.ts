@@ -5,6 +5,9 @@ import rateLimit from "@fastify/rate-limit";
 import { healthRoutes } from "./routes/health";
 import { authRoutes } from "./routes/auth";
 import { mediaRoutes } from "./routes/media";
+import { sessionRoutes } from "./routes/sessions";
+import { highlightRoutes } from "./routes/highlights";
+import { statsRoutes } from "./routes/stats";
 
 export function buildServer() {
   const app = Fastify({ logger: true });
@@ -24,6 +27,9 @@ export function buildServer() {
   app.register(healthRoutes);
   app.register(authRoutes);
   app.register(mediaRoutes);
+  app.register(sessionRoutes);
+  app.register(highlightRoutes);
+  app.register(statsRoutes);
 
   return app;
 }
