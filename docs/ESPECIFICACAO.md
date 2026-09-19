@@ -223,21 +223,30 @@ Estrutura por domínio, não por tipo de mídia:
 
 ## 15. Plano de desenvolvimento por etapas
 
-1. Estrutura visual — design system, tema claro/escuro, sidebar desktop,
+1. ✅ Estrutura visual — design system, tema claro/escuro, sidebar desktop,
    bottom nav mobile, tipografia, cards, botões, abas, modal base, tela
    "Hoje" vazia. **Sem backend.**
-2. Backend base — Node, PostgreSQL, Prisma, Docker, `.env`, `/api/health`.
-3. Autenticação — login, logout, sessão, usuário único.
-4. Biblioteca — CRUD genérico para os 5 tipos de mídia + importação dos dados
-   antigos do `localStorage` (ver seção 13.3).
-5. Filmes — campos e progresso completos.
-6. Séries e novelas — temporadas, episódios, capítulos, progresso.
-7. Livros — autor, páginas, capa, progresso, avaliação, sessões.
-8. Audiolivros — duração, ouvido, restante, progresso, sessões.
-9. Hoje — dashboard completo (continuar, recentes, progresso, resumo).
-10. Sessões, histórico e destaques.
-11. Busca, filtros e estatísticas.
-12. Produção — VPS, Nginx, HTTPS, domínio, backup, logs, segurança, testes finais.
+2. ✅ Backend base — Node, PostgreSQL, Prisma, Docker, `.env`, `/api/health`.
+3. ✅ Autenticação — login, logout, sessão, usuário único.
+4. ✅ Biblioteca — CRUD genérico para os 5 tipos de mídia.
+5. ✅ Filmes — campos e progresso completos.
+6. ✅ Séries e novelas — temporadas, episódios, capítulos, progresso.
+7. ✅ Livros — autor, páginas, capa, progresso, avaliação, sessões.
+8. ✅ Audiolivros — duração, ouvido, restante, progresso, sessões.
+9. ✅ Hoje — dashboard completo (continuar, recentes, progresso, resumo).
+10. ✅ Sessões, histórico e destaques.
+11. ✅ Busca, filtros e estatísticas.
+12. ⏳ Produção — VPS, Nginx, HTTPS, domínio, backup, logs, segurança, testes finais.
+    **Aguardando aprovação explícita** — é a única etapa que toca infraestrutura
+    real (a VPS, o domínio, certificados) fora do ambiente de desenvolvimento.
+
+Nota sobre a Etapa 4: como a arquitetura já usa uma tabela `media_items`
+genérica com componentes de UI compartilhados entre os 5 tipos, o CRUD saiu
+pronto com os campos de cada tipo (Etapas 5-8) na mesma leva de trabalho —
+por isso essas seis etapas foram entregues e reportadas juntas. A
+importação do `localStorage` dos protótipos antigos prevista aqui não foi
+implementada: o projeto passou a ser construído do zero (decisão do dono do
+produto), então não há dados antigos deste sistema para migrar.
 
 Cada etapa: informar antes o que será alterado; ao final, reportar
 funcionalidades implementadas, arquivos criados/modificados, testes
