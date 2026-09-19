@@ -100,7 +100,12 @@ export function progressLabel(item: MediaItem): string | null {
   if (!progress) return null;
 
   if (type === "movie") {
-    return `${progressPercent(progress)}% assistido`;
+    const percent = progressPercent(progress);
+    if (progress.totalValue) {
+      const remainingMin = Math.round((progress.totalValue - progress.currentValue) / 60);
+      return `${percent}% assistido · faltam ${remainingMin} min`;
+    }
+    return `${percent}% assistido`;
   }
   if (type === "series") {
     const season = metadata?.seasonCurrent ?? 1;
@@ -121,7 +126,11 @@ export function progressLabel(item: MediaItem): string | null {
   if (type === "audiobook") {
     const listened = Math.round(progress.currentValue / 60);
     const total = progress.totalValue ? Math.round(progress.totalValue / 60) : null;
-    return total ? `${listened} min de ${total} min` : `${listened} min ouvidos`;
+    if (total) {
+      const remaining = Math.max(0, total - listened);
+      return `${listened} min de ${total} min · faltam ${remaining} min`;
+    }
+    return `${listened} min ouvidos`;
   }
   return null;
 }

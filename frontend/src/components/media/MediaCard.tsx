@@ -38,6 +38,12 @@ export function MediaCard({ item, onEdit, onDelete, onLogSession, onAddHighlight
           <span className={badgeClass}>{STATUS_LABELS[item.type][item.status]}</span>
         </div>
         {subtitleParts && <span className={styles.subtitle}>{subtitleParts}</span>}
+        {Boolean(item.rating) && (
+          <span className={styles.rating} aria-label={`Avaliação: ${item.rating} de 5`}>
+            {"★".repeat(item.rating!)}
+            {"☆".repeat(5 - item.rating!)}
+          </span>
+        )}
         {label && (
           <>
             <ProgressBar percent={percent} />
